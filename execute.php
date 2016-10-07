@@ -1,4 +1,5 @@
 <?php
+require "vendor/autoload.php";
 use Telegram\Bot\Api;
 include("_token.php");
 
