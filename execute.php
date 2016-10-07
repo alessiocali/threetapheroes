@@ -14,5 +14,5 @@ if (!$callback_id) {
     $chat_id = $update->getMessage()->getChat()->getId();
     $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $msg]);    
 } else {
-    $telegram->answerCallbackQuery(['callback_query_id' => $callback_id, 'url' = "https://threetapheroes.herokuapp.com/"]);
+    $telegram->answerCallbackQuery(['callback_query_id' => $callback_id, 'url' => "https://threetapheroes.herokuapp.com/"]);
 }
