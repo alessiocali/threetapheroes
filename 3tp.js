@@ -17,6 +17,9 @@ function preload() {
 }
 
 function create() {
+    
+    this.game.stage.scale.pageAlignHorizontally = true;
+    this.game.stage.scale.pageAlignVeritcally = true;
     game.add.sprite(-8, 0, 'background');
     
     game.physics.startSystem(Phaser.Physics.ARCADE);
