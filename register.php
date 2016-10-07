@@ -1,5 +1,6 @@
 <?php
 //Load this page to register the desired Webhook (set the Webhook URL in _token.php)
+require "vendor/autoload.php";
 use Telegram\Bot\Api;
 include("_token.php");
 
