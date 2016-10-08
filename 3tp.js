@@ -17,10 +17,10 @@ function preload() {
 }
 
 function create() {
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     
-    this.game.stage.scale.pageAlignHorizontally = true;
-    this.game.stage.scale.pageAlignVeritcally = true;
-    game.add.sprite(-8, 0, 'background');
+    var background = game.add.sprite(game.width / 2, 0, 'background');
+    background.x -= background.width / 2;
     
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
@@ -30,7 +30,7 @@ function create() {
     knight.animations.play('idle');
     knight.cooldown = false;
     
-    sword_btn = game.add.button(game.width/2 - 70, game.height / 2 + 485, 'sword_btn', attackSword, this,
+    sword_btn = game.add.button(game.width / 2 - 70, game.height / 2 + 485, 'sword_btn', attackSword, this,
                                0, 0, 1, 0);
     sword_btn.scale.setTo(2, 2);
     
