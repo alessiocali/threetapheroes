@@ -5,12 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Three Taps Heroes</title>
+    <style>
+        @font-face {
+            font-family : 'heartbit'; 
+            src : url('assets/heartbit.ttf');
+        }
+        #game_div {
+            margin : auto;
+            width : 80vw;
+            max-width : 720px;
+            height : auto;
+        }
+        #preload-font {
+          font-family: 'heartbit', sans-serif;
+          text-indent: -9999px;
+          font-size: 0;
+        }
+    </style>    
     <script src="libs/phaser.min.js"></script>
 </head>
     
 <body>
-    <div id="gamediv" style="margin:auto;width:80vw;max-width:720px;height:auto;"></div>
-    <script type="text/javascript" src="3tp.js"></script>
+    <div id="preload-font"></div>
+    <div id="game_div"></div>
+    <script type="text/javascript" src="game.js"></script>
 </body>
     
 </html>
