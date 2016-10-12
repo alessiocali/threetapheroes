@@ -15,7 +15,7 @@ class Hero {
     }
     
     attack() {
-        if (this.cooldown) return;
+        if (this.cooldown || gameOver) return;
     
         this.sprite.animations.play('attack');
         var proj = projs.create(this.sprite.x, this.sprite.y - 10, this.attack_ref);
@@ -25,11 +25,11 @@ class Hero {
     }
 }
 
-const COOLDOWN_TIME = 500;
+const COOLDOWN_TIME = 300;
 const PROJ_SPEED = -1000;
 
 var game = new Phaser.Game(720, 1280, Phaser.AUTO, 'gamediv', { preload: preload, create: create, update: update });
-var sword_btn;
+var gameOver = false;
 var limit;
 var heroes;
 var projs;
@@ -37,15 +37,19 @@ var enemy_grp;
 var enemies = [];
 var score = 0;
 var score_text;
-var default_speed = 100;
-var sprint_speed = 300;
+var default_speed = 200;
+var max_speed = 500;
+var sprint_speed = 200;
+var cleanup = {enemies : [], projectiles : []}
 
-var spawn_interval = 5000; //ms
+var spawn_interval = 3000; //ms
+var min_spawn = 500;
 var spawning = false;
 
 function preload() {
     game.load.image('background', 'assets/map.png');
-    game.load.bitmapFont('heartbit', 'assets/heartbit_0.png', 'assets/heartbit.fnt');
+    game.load.bitmapFont('heartbit', 'assets/heartbit.png', 'assets/heartbit.fnt'); //32pt
+    game.load.bitmapFont('heartbit-72', 'assets/heartbit-72.png', 'assets/heartbit-72.fnt');
     game.load.spritesheet('knight', 'assets/knight-64.png', 64, 104);
     game.load.spritesheet('mage', 'assets/mage-64.png', 64, 108);
     game.load.spritesheet('ranger', 'assets/ranger-64.png', 64, 108);
@@ -66,7 +70,7 @@ function create() {
     limit = background.height * 0.8;
     background.x -= background.width / 2;
     
-    score_text = game.add.bitmapText(game.width * 0.80, game.height * 0.85, "heartbit", "Score: " + score);
+    score_text = game.add.bitmapText(game.width * 0.75, game.height * 0.85, "heartbit", "Score: " + score, 48);
     
     game.physics.startSystem(Phaser.Physics.ARCADE);
     
@@ -86,21 +90,32 @@ function create() {
 }
 
 function update() {
-    game.physics.arcade.overlap(enemy_grp, projs, defeat, null, this);
-    
-    if (!spawning) {
-        game.time.events.add(spawn_interval, spawn, this, heroes[Math.floor(Math.random() * heroes.length)]);
-        spawning = true;
+    if (!gameOver) {
+        if (!spawning) {
+            game.time.events.add(spawn_interval, spawn, this, heroes[Math.floor(Math.random() * heroes.length)]);
+            spawning = true;
+        }    
+        game.physics.arcade.overlap(enemy_grp, projs, defeat, function(e, p){return !(e.aysncDestroy || p.asyncDestroy);}, this);
     }
-    
+        
     if (enemies.length != 0) {
         var frontmost = enemies[0];
         
         if (frontmost.y > limit) {
-            frontmost.destroy();
-            enemies.shift();
+            cleanup.enemies.push(frontmost);
+            setGameOver();
         }
     }
+    
+    cleanup.enemies.forEach(function(enemy, i) {
+        var idx = enemies.indexOf(enemy);
+        if (idx != -1)
+            enemies.splice(idx, 1);
+        enemy_grp.remove(enemy, true);
+    }, this);
+    cleanup.projectiles.forEach(function(projectile, i) {
+        projs.remove(projectile, true);
+    }, this);
 }
 
 function spawn(hero) {
@@ -113,18 +128,17 @@ function spawn(hero) {
     enemies.push(slime);
 }
 
-function defeat(enemy, projectile) {
-    projectile.destroy();
-    
+function defeat(enemy, projectile) {    
     if (enemy == enemies[0]) {
         score += 10;
+        default_speed = Math.min(default_speed + 5, max_speed);
+        spawn_interval = Math.max(spawn_interval - 75, min_spawn);
         score_text.setText("Score: " + score);
-        console.log("Score is now: " + score);
-        enemy.destroy();
-        enemies.shift();
+        //console.log("Score is now: " + score);
+        cleanup.enemies.push(enemy);
     } else {
         enemy_grp.forEachExists(function(enemy) {
-            enemy.body.velocity.y = sprint_speed;
+            enemy.body.velocity.y = default_speed + sprint_speed;
         }, this);
         game.time.events.add(500, function() {
             enemy_grp.forEachExists(function(enemy) {
@@ -132,5 +146,11 @@ function defeat(enemy, projectile) {
             }, this);
         }, this);
     }
-   
+    cleanup.projectiles.push(projectile);
+}
+
+function setGameOver() {
+    game.add.bitmapText(game.width / 2 - 150, game.height * 0.3, "heartbit-72", "GAME OVER", 72);
+    game.add.bitmapText(game.width / 2 - 150, game.height * 0.35, "heartbit-72", "Your score: " + score, 72);
+    gameOver = true;
 }
