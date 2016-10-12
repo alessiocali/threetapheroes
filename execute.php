@@ -14,5 +14,11 @@ if (!$callback_id) {
     $chat_id = $update->getMessage()->getChat()->getId();
     $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $msg]);    
 } else {
-    $telegram->answerCallbackQuery(['callback_query_id' => $callback_id, 'url' => "https://threetapheroes.herokuapp.com/"]);
+    $inlineQuery = $update->inlineQuery;
+    error_log(json_encode($update));
+    $url = "https://threetapheroes.herokuapp.com/index.html?uid="
+                                    .$update['callback_query']['from']['id']."&iid="
+                                    .$update['callback_query']['inline_message_id'];
+    $telegram->answerCallbackQuery(['callback_query_id' => $callback_id, 
+                                    'url' => $url]);
 }

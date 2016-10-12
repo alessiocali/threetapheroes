@@ -103,7 +103,8 @@ function update() {
         
         if (frontmost.y > limit) {
             cleanup.enemies.push(frontmost);
-            setGameOver();
+            if (!gameOver)
+                setGameOver();
         }
     }
     
@@ -153,4 +154,29 @@ function setGameOver() {
     game.add.bitmapText(game.width / 2 - 150, game.height * 0.3, "heartbit-72", "GAME OVER", 72);
     game.add.bitmapText(game.width / 2 - 150, game.height * 0.35, "heartbit-72", "Your score: " + score, 72);
     gameOver = true;
+    
+    $.post({
+        url: "setscore.php",
+        data: {
+            'score' : score,
+            'uid' : parse("uid"),
+            "iid" : parse("iid")
+        },
+        dataType : "json"
+    });
+}
+
+function parse(val) {
+    var result = "Not found",
+        tmp = [];
+    location.search
+    //.replace ( "?", "" ) 
+    // this is better, there might be a question mark inside
+    .substr(1)
+        .split("&")
+        .forEach(function (item) {
+        tmp = item.split("=");
+        if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+    });
+    return result;
 }
