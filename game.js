@@ -25,31 +25,39 @@ class Hero {
     }
 }
 
-const COOLDOWN_TIME = 300;
+const COOLDOWN_TIME = 150;
 const PROJ_SPEED = -1000;
 
 var game = new Phaser.Game(720, 1280, Phaser.AUTO, 'game_div', { preload: preload, create: create, update: update }); 
 var gameOver = false;
+var spawning = false;
+
 var limit;
 var heroes;
+var hearts = [];
+
 var projs;
 var enemy_grp;
 var enemies = [];
-var score = 0;
-var score_text;
-var default_speed = 200;
-var max_speed = 500;
-var sprint_speed = 200;
 var cleanup = {enemies : [], projectiles : []}
 
-var spawn_interval = 3000; //ms
-var min_spawn = 500;
-var spawning = false;
+var score = 0;
+var score_text;
+
+var default_speed = 100;
+const SPEED_INC = 5;
+const MAX_SPEED = 500;
+//var sprint_speed = 200;
+
+var spawn_interval = 2300; //ms
+const SPAWN_DEC = 50;
+const MIN_SPAWN = 500;
 
 function preload() {
     game.load.image('background', 'assets/map.png');
     game.load.bitmapFont('heartbit', 'assets/heartbit.png', 'assets/heartbit.fnt'); //32pt
     game.load.bitmapFont('heartbit-72', 'assets/heartbit-72.png', 'assets/heartbit-72.fnt');
+    game.load.image('heart', 'assets/heart.png');
     game.load.spritesheet('knight', 'assets/knight-64.png', 64, 104);
     game.load.spritesheet('mage', 'assets/mage-64.png', 64, 108);
     game.load.spritesheet('ranger', 'assets/ranger-64.png', 64, 108);
@@ -87,6 +95,9 @@ function create() {
     
     enemy_grp = game.add.group();
     enemy_grp.enableBody = true;
+    
+    for (var i = 0; i < 3; i++)
+        hearts.push(game.add.sprite((0.05*i + 0.8) * game.width, 0.02 * game.height, 'heart'));
 }
 
 function update() {
@@ -132,20 +143,17 @@ function spawn(hero) {
 function defeat(enemy, projectile) {    
     if (enemy == enemies[0]) {
         score += 10;
-        default_speed = Math.min(default_speed + 5, max_speed);
-        spawn_interval = Math.max(spawn_interval - 75, min_spawn);
+        default_speed = Math.min(default_speed + SPEED_INC, MAX_SPEED);
+        spawn_interval = Math.max(spawn_interval - SPAWN_DEC, MIN_SPAWN);
         score_text.setText("Score: " + score);
         //console.log("Score is now: " + score);
         cleanup.enemies.push(enemy);
     } else {
-        enemy_grp.forEachExists(function(enemy) {
-            enemy.body.velocity.y = default_speed + sprint_speed;
-        }, this);
-        game.time.events.add(500, function() {
-            enemy_grp.forEachExists(function(enemy) {
-                enemy.body.velocity.y = default_speed;
-            }, this);
-        }, this);
+        if (hearts.length > 0) {
+            hearts.shift().destroy();
+            if (hearts.length == 0)
+                setGameOver();
+        }
     }
     cleanup.projectiles.push(projectile);
 }

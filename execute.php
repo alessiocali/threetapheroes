@@ -9,13 +9,30 @@ $update = $telegram->getWebhookUpdates();
 $callback_id = $update->getCallbackQuery() ? $update->getCallbackQuery()->getId() : "";
 
 if (!$callback_id) {
-    $msg = "Hi! This bot is currently a Work in Progress. Please stay tuned!";
-
-    $chat_id = $update->getMessage()->getChat()->getId();
-    $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $msg]);    
+    $msg = $update->getMessage();
+    $cmd = $msg->text;
+    $chat_id = $update->getChat()->getId();
+    
+    if (strcmp($cmd, "/start") == 0 || strcmp($cmd, "/help") == 0) {
+        $telegram->sendMessage(['chat_id' => $chat_id, 'text' => 
+                               "Hi! This is the bot for Three Tap Heroes.\n
+                               Commands:\n
+                               - /help Shows this message\n
+                               - /credits Shows the credits\n
+                               - /game Sends the game"]);
+    } else if (strcmp($cmd, "/credits") == 0) {
+        $credits = fopen("CREDITS.md", "r") or die("Somebody stole the CREDITS! Please wait while we call the Web Police");
+        $ans = "";
+        while (!feof($credits)) {
+            $ans = $ans.fgets($credits);
+        }
+        $telegram->sendMessage(['chat_id' => $chat_id, 'text' => $ans]);
+    } else if (strcmp($cmd, "/game") == 0) {
+        $telegram->sendGame(['chat_id' => %chat_id, 'game' => 'threetapheroes']);
+    }
+    
 } else {
     $inlineQuery = $update->inlineQuery;
-    error_log(json_encode($update));
     $url = "https://threetapheroes.herokuapp.com/index.html?uid="
                                     .$update['callback_query']['from']['id']."&iid="
                                     .$update['callback_query']['inline_message_id'];
