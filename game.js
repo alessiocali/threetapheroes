@@ -28,7 +28,7 @@ class Hero {
 const COOLDOWN_TIME = 300;
 const PROJ_SPEED = -1000;
 
-var game = new Phaser.Game(720, 1280, Phaser.AUTO, 'gamediv', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(720, 1280, Phaser.AUTO, 'game_div', { preload: preload, create: create, update: update }); 
 var gameOver = false;
 var limit;
 var heroes;
@@ -63,7 +63,7 @@ function preload() {
 }
 
 function create() {
-    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
     game.stage.backgroundColor = 'rgb(50, 50, 50)';
     
     var background = game.add.sprite(game.width / 2, 0, 'background');
