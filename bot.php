@@ -27,7 +27,7 @@ if (!$callback_id) {    // No callback. Answer simple queries.
                                "Hi! This is the bot for Three Tap Heroes.\n".
                                "Commands:\n".
                                "- /help Shows this message\n".
-                               "- /instructions Prints the instructions for the game\n"
+                               "- /instructions Prints the instructions for the game\n".
                                "- /credits Shows the credits\n".
                                "- /game Sends the game"]);
     } else if (strcmp($cmd, "/instructions") == 0) {    // Send the instructions
