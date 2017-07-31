@@ -80,10 +80,12 @@ app.get('/assets/*', (req, res) => {
 
 app.get('/setscore/uid/:user_id/chat/:chat_id/msg/:msg_id/score/:score', (req, res) => {
     bot.telegram.setGameScore(req.params.user_id, req.params.score, null, req.params.chat_id, req.params.msg_id);
+    res.sendStatus(200);
 });
 
 app.get('/setscore/uid/:user_id/iid/:iid/score/:score', (req, res) => {
     bot.telegram.setGameScore(req.params.user_id, req.params.score, req.params.iid);
+    res.sendStatus(200);
 });
 
 app.listen(app.get('port'), () => {
