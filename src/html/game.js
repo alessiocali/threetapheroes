@@ -6,9 +6,6 @@
     Author: Alessio Giuseppe Calì
 */
 
-const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true});
-
 /*
     This class represent each hero. All of them have:
     - A spritesheet
