@@ -1,0 +1,24 @@
+{
+  "name": "3tapheroes",
+  "version": "1.0.0",
+  "description": "This project is very early in development. You might spot various errors in the code and find the program itself doing far less then it is supposed to. Plus I'm not exactly a pro in web development so take that into account.",
+  "main": "_token.js",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.27.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alessiocali/3tapheroes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alessiocali/3tapheroes/issues"
+  },
+  "homepage": "https://github.com/alessiocali/3tapheroes#readme"
+}

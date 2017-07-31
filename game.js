@@ -6,6 +6,9 @@
     Author: Alessio Giuseppe Calì
 */
 
+const TelegramBot = require('node-telegram-bot-api');
+const bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true});
+
 /*
     This class represent each hero. All of them have:
     - A spritesheet
@@ -197,16 +200,17 @@ function setGameOver() {
     game.add.bitmapText(game.width / 2 - 150, game.height * 0.35, "heartbit-72", "Your score: " + score, 72);
     gameOver = true;
     
-    // Score and user data is POSTed to setscore.php who will update Telegram's leaderboard
-    $.post({
-        url: "setscore.php",
-        data: {
+    // Score and user data are sent to the bot to update the leaderboard
+    var uid = parse("uid");
+    var iid = parse("iid");
+    if (uid && iid) {
+        bot.setGameScore({
+            'user_id' : uid,
             'score' : score,
-            'uid' : parse("uid"),
-            'iid' : parse("iid")
-        },
-        dataType : "json"
-    });
+            'inline_message_id' : iid,
+            'edit_message' : true
+        });
+    }
 }
 
 // Simple borrowed function to retrieve GET parameters
