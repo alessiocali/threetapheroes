@@ -11,6 +11,15 @@ app.set('port', tokens.PORT || tokens.DEFAULT_PORT);
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/index.html'));
 });
+app.get('/game.js', (req, res) => {
+    res.sendFile(path.join(__dirname + '/game.js'));
+});
+app.get('/libs/*', (req, res) => {
+    res.sendFile(path.join(__dirname + req.path));
+});
+app.get('/assets/*', (req, res) => {
+    res.sendFile(path.join(__dirname + req.path));
+});
 
 app.get('/setscore/uid/:user_id/iid/:inline_id', (req, res) => {
     bot.setGameScore({
