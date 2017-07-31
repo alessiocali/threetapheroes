@@ -38,7 +38,7 @@ bot.on('message', (msg) => {
         });
     }
     else if (text === "/credits") {
-        fs.readFile('CREDITS.md', (err, data) => {
+        fs.readFile('../CREDITS.md', (err, data) => {
             var answer = err ? "Somebody stole the CREDITS! Please wait while we call the Web Police" : data;
             bot.sendMessage({
                 'chat_id' : chatId,
