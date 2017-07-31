@@ -71,8 +71,8 @@ bot.on('callbackQuery', (query) => {
     var url =   tokens.GAME_URL + "?uid=" + query.from.id + 
                 "&iid=" + query.inline_message_id;
     bot.answerCallbackQuery({
-        'callback_query_id' : query.id,
-        'url' : url
+        callback_query_id : query.id,
+        url : url
     });
 });
 
@@ -81,32 +81,30 @@ bot.on('message', (msg) => {
     var chatId = msg.chat.id;
     
     if (text === "/start" || text === "/help") {
-        bot.sendMessage(chatId,
-                        "Hi! This is the bot for Three Tap Heroes.\n" +
-                        "Commands:\n" +
-                        "- /help Shows this message\n" +
-                        "- /instructions Prints the instructions for the game\n" +
-                        "- /credits Shows the credits\n" +
-                        "- /game Sends the game"
-        );
+        var reply = "Hi! This is the bot for Three Tap Heroes.\n" +
+                    "Commands:\n" +
+                    "- /help Shows this message\n" +
+                    "- /instructions Prints the instructions for the game\n" +
+                    "- /credits Shows the credits\n" +
+                    "- /game Sends the game";
+        bot.sendMessage(chatId, reply, { chat_id : chatId, text : reply});
     }
     else if (text === "/instructions") {
-        bot.sendMessage(chatId,
-                        "Three young heroes are standing between an army of monsters and " +
-                        "the innocent villagers! Help them coordinating their attacks to repel " +
-                        "the enemies. But beware! Only the frontmost enemy can be damaged. " +
-                        "If you miss and hit another target, you will loose hearts! If you run " +
-                        "out of hearts or the enemy reaches the heroes, it's Game Over!"
-        );
+        var reply = "Three young heroes are standing between an army of monsters and " +
+                    "the innocent villagers! Help them coordinating their attacks to repel " +
+                    "the enemies. But beware! Only the frontmost enemy can be damaged. " +
+                    "If you miss and hit another target, you will loose hearts! If you run " +
+                    "out of hearts or the enemy reaches the heroes, it's Game Over!";
+        bot.sendMessage(chatId, reply, {chat_id : chatId, reply : reply});
     }
     else if (text === "/credits") {
         fs.readFile('../CREDITS.md', (err, data) => {
             var answer = err ? "Somebody stole the CREDITS! Please wait while we call the Web Police" : data;
-            bot.sendMessage(chatId, answer);
+            bot.sendMessage(chatId, answer, {chat_id : chatId, reply : reply});
         });
     }
     else if (text === "/game") {
-        bot.sendGame(chatId, tokens.GAME_NAME);
+        bot.sendGame(chatId, tokens.GAME_NAME, {chat_id : chatId, game_sort_name : tokens.GAME_NAME});
     }
 });
 
@@ -126,8 +124,10 @@ app.get('/assets/*', (req, res) => {
 app.get('/setscore/uid/:user_id/iid/:inline_id/score/:score', (req, res) => {
     bot.setGameScore(req.params.user_id, req.params.score,
         {
-            'inline_message_id' : req.params.inline_id,
-            'edit_message' : true
+            user_id : req.params.user_id,
+            score : req.params.score,
+            inline_message_id : req.params.inline_id,
+            edit_message : true
         }
     );
 });
