@@ -199,9 +199,11 @@ function setGameOver() {
     
     // Score and user data are sent to the bot to update the leaderboard
     var uid = parse("uid");
-    var iid = parse("iid");
-    if (uid && iid) {
-        $.get("/setscore/uid/"+uid+"/iid/"+iid+"/score/"+score);
+    var msgid = parse("msgid");
+    var chatid = parse("chatid");
+    
+    if (uid && msgid && chatid) {
+        $.get("/setscore/uid/"+uid+"/chat/"+chatid+"/msg/"+msgid+"/score/"+score);
     }
 }
 

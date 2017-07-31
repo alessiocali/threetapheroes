@@ -1,114 +1,60 @@
 var tokens = require('./_token.js');
-var TelegramBot = require('node-telegram-bot-api');
+var fs = require('fs');
+var Telegraf = require('telegraf');
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 
-var bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true, webhook: { port: tokens.PORT || tokens.DEFAULT_PORT }});
+var bot = new Telegraf(tokens.BOT_TOKEN);
 var app = express();
 
 app.set('port', tokens.PORT || tokens.DEFAULT_PORT);
 app.use(express.static(path.join(__dirname + '/html')));
-app.use("/bot"+tokens.BOT_TOKEN, bodyParser.json());
+app.use(bot.webhookCallback('/bot'+tokens.BOT_TOKEN));
 
-bot.setWebHook();
-bot.setWebHook(tokens.WEBHOOK+"/bot"+tokens.BOT_TOKEN);
+bot.telegram.setWebhook(tokens.WEBHOOK+"bot"+tokens.BOT_TOKEN);
  
-bot.on('callbackQuery', (query) => {
-    var url =   tokens.GAME_URL + "?uid=" + query.from.id + 
-                "&iid=" + query.inline_message_id;
-    bot.answerCallbackQuery({
-        'callback_query_id' : query.id,
-        'url' : url
-    });
-});
-
-bot.on('message', (msg) => {
-    var text = msg.text;
-    var chatId = msg.chat.id;
+bot.gameQuery((ctx) => {
+    var uid = ctx.from.id;
+    var msgid = ctx.callbackQuery.message.message_id;
+    var chatid = ctx.chat.id;
     
-    if (text === "/start" || text === "/help") {
-        bot.sendMessage({
-            'chat_id' : chatId,
-            'text' :    "Hi! This is the bot for Three Tap Heroes.\n" +
-                        "Commands:\n" +
-                        "- /help Shows this message\n" +
-                        "- /instructions Prints the instructions for the game\n" +
-                        "- /credits Shows the credits\n" +
-                        "- /game Sends the game"
-        });
-    }
-    else if (text === "/instructions") {
-        bot.sendMessage({
-            'chat_id' : chatId,
-            'text' :    "Three young heroes are standing between an army of monsters and " +
-                        "the innocent villagers! Help them coordinating their attacks to repel " +
-                        "the enemies. But beware! Only the frontmost enemy can be damaged. " +
-                        "If you miss and hit another target, you will loose hearts! If you run " +
-                        "out of hearts or the enemy reaches the heroes, it's Game Over!"
-        });
-    }
-    else if (text === "/credits") {
-        fs.readFile('../CREDITS.md', (err, data) => {
-            var answer = err ? "Somebody stole the CREDITS! Please wait while we call the Web Police" : data;
-            bot.sendMessage({
-                'chat_id' : chatId,
-                'text' : answer
-            });
-        });
-    }
-    else if (text === "/game") {
-        bot.sendGame({
-            'chat_id' : chatId,
-            'game_short_name' : tokens.GAME_NAME
-        });
-    }
+    var url =   tokens.GAME_URL + "?uid=" + uid + 
+                "&chatid=" + chatid + "&msgid=" + msgid;
+    ctx.answerGameQuery(url);
 });
 
-bot.setWebHook(tokens.WEBHOOK+"/bot"+tokens.BOT_TOKEN);
- 
-bot.on('callbackQuery', (query) => {
-    var url =   tokens.GAME_URL + "?uid=" + query.from.id + 
-                "&iid=" + query.inline_message_id;
-    bot.answerCallbackQuery({
-        callback_query_id : query.id,
-        url : url
-    });
-});
-
-bot.on('message', (msg) => {
-    var text = msg.text;
-    var chatId = msg.chat.id;
-    
-    if (text === "/start" || text === "/help") {
-        var reply = "Hi! This is the bot for Three Tap Heroes.\n" +
+bot.command(['/start', '/help'], (ctx) => {
+     var reply =    "Hi! This is the bot for Three Tap Heroes.\n" +
                     "Commands:\n" +
                     "- /help Shows this message\n" +
                     "- /instructions Prints the instructions for the game\n" +
                     "- /credits Shows the credits\n" +
                     "- /game Sends the game";
-        bot.sendMessage(chatId, reply, { chat_id : chatId, text : reply});
-    }
-    else if (text === "/instructions") {
-        var reply = "Three young heroes are standing between an army of monsters and " +
-                    "the innocent villagers! Help them coordinating their attacks to repel " +
-                    "the enemies. But beware! Only the frontmost enemy can be damaged. " +
-                    "If you miss and hit another target, you will loose hearts! If you run " +
-                    "out of hearts or the enemy reaches the heroes, it's Game Over!";
-        bot.sendMessage(chatId, reply, {chat_id : chatId, reply : reply});
-    }
-    else if (text === "/credits") {
-        fs.readFile('../CREDITS.md', (err, data) => {
-            var answer = err ? "Somebody stole the CREDITS! Please wait while we call the Web Police" : data;
-            bot.sendMessage(chatId, answer, {chat_id : chatId, reply : reply});
-        });
-    }
-    else if (text === "/game") {
-        bot.sendGame(chatId, tokens.GAME_NAME, {chat_id : chatId, game_sort_name : tokens.GAME_NAME});
-    }
+    ctx.reply(reply);
 });
 
-app.get(/\/(index\.html)?/, (req, res) => {
+bot.command('/instructions', (ctx) => {
+    var reply = "Three young heroes are standing between an army of monsters and " +
+                "the innocent villagers! Help them coordinating their attacks to repel " +
+                "the enemies. But beware! Only the frontmost enemy can be damaged. " +
+                "If you miss and hit another target, you will loose hearts! If you run " +
+                "out of hearts or the enemy reaches the heroes, it's Game Over!";
+    ctx.reply(reply);
+});
+
+bot.command('/credits', (ctx) => {
+    fs.readFile('./CREDITS.md', 'utf8', (err, data) => {
+        var answer = err ? "Somebody stole the CREDITS! Please wait while we call the Web Police" : data;
+        ctx.reply(answer);
+    });
+});
+
+bot.command('/game', (ctx) => {
+    ctx.replyWithGame(tokens.GAME_NAME);
+});
+
+app.get(['/index.html', '/'], (req, res) => {
     res.sendFile('/index.html');
 });
 app.get('/game.js', (req, res) => {
@@ -121,20 +67,8 @@ app.get('/assets/*', (req, res) => {
     res.sendFile(req.path);
 });
 
-app.get('/setscore/uid/:user_id/iid/:inline_id/score/:score', (req, res) => {
-    bot.setGameScore(req.params.user_id, req.params.score,
-        {
-            user_id : req.params.user_id,
-            score : req.params.score,
-            inline_message_id : req.params.inline_id,
-            edit_message : true
-        }
-    );
-});
-
-app.post("/bot"+tokens.BOT_TOKEN, (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
+app.get('/setscore/uid/:user_id/chat/:chat_id/msg/:msg_id/score/:score', (req, res) => {
+    bot.telegram.setGameScore(req.params.user_id, req.params.score, null, req.params.chat_id, req.params.msg_id);
 });
 
 app.listen(app.get('port'), () => {
