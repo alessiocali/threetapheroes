@@ -1,13 +1,15 @@
 var tokens = require('./_token.js');
 var TelegramBot = require('node-telegram-bot-api');
 var express = require('express');
+var bodyParser = require('body-parser');
 var path = require('path');
 
 var bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true, webhook: { port: tokens.PORT || tokens.DEFAULT_PORT }});
 var app = express();
 
 app.set('port', tokens.PORT || tokens.DEFAULT_PORT);
-app.use(express.static(path.join(__dirname + '/html')))
+app.use(express.static(path.join(__dirname + '/html')));
+app.use("/bot"+tokens.BOT_TOKEN, bodyParser.json());
 
 bot.setWebHook(tokens.WEBHOOK+"/bot"+tokens.BOT_TOKEN);
  
