@@ -16,11 +16,22 @@ bot.telegram.setWebhook(tokens.WEBHOOK+"bot"+tokens.BOT_TOKEN);
  
 bot.gameQuery((ctx) => {
     var uid = ctx.from.id;
-    var msgid = ctx.callbackQuery.message.message_id;
-    var chatid = ctx.chat.id;
+    var url;
     
-    var url =   tokens.GAME_URL + "?uid=" + uid + 
-                "&chatid=" + chatid + "&msgid=" + msgid;
+    if (ctx.callbackQuery.message) {
+        var msgid = ctx.callbackQuery.message.message_id;
+        var chatid = ctx.chat.id;
+        url = tokens.GAME_URL + "?uid=" + uid + "&chatid=" + chatid + "&msgid=" + msgid;
+    }
+    else if (ctx.callbackQuery.inline_message_id) {
+        var iid = ctx.callbackQuery.inline_message_id;
+        url = tokens.GAME_URL + "?uid=" + uid + "&iid=" + iid;
+    }
+    else {
+        console.log("No detail for update from callback query.")
+        url = tokens.GAME_URL;
+    }
+
     ctx.answerGameQuery(url);
 });
 
@@ -69,6 +80,10 @@ app.get('/assets/*', (req, res) => {
 
 app.get('/setscore/uid/:user_id/chat/:chat_id/msg/:msg_id/score/:score', (req, res) => {
     bot.telegram.setGameScore(req.params.user_id, req.params.score, null, req.params.chat_id, req.params.msg_id);
+});
+
+app.get('/setscore/uid/:user_id/iid/:iid/score/:score', (req, res) => {
+    bot.telegram.setGameScore(req.params.user_id, req.params.score, req.params.iid);
 });
 
 app.listen(app.get('port'), () => {

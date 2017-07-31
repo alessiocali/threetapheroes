@@ -201,9 +201,13 @@ function setGameOver() {
     var uid = parse("uid");
     var msgid = parse("msgid");
     var chatid = parse("chatid");
+    var iid = parse("iid");
     
     if (uid && msgid && chatid) {
         $.get("/setscore/uid/"+uid+"/chat/"+chatid+"/msg/"+msgid+"/score/"+score);
+    }
+    else if (uid && iid) {
+        $.get("/setscore/uid/"+uid+"/iid/"+iid+"/score/"+score)
     }
 }
 
