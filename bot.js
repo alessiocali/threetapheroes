@@ -1,8 +1,10 @@
 const tokens = require('./_tokens.js');
 const fs = require('fs');
 const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true});
+const bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true, webhook: { port: tokens.PORT || tokens.DEFAULT_PORT }});
 
+bot.setWebHook(tokens.WEBHOOK);
+ 
 bot.on('callbackQuery', (query) => {
     var url =   tokens.GAME_URL + "?uid=" + query.from.id + 
                 "&iid=" + query.inline_message_id;
