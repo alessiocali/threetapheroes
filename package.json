@@ -5,7 +5,8 @@
   "main": "_token.js",
   "dependencies": {
     "node-telegram-bot-api": "^0.27.1",
-    "express": "4.15.3"
+    "express": "4.15.3",
+    "body-parser": "1.17.2"
   },
   "devDependencies": {},
   "scripts": {
