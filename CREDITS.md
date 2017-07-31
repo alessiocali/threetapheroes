@@ -22,10 +22,12 @@ Credits
         Minor icons and modifications.
         
   - Powered by
+    * [Node.js](https://nodejs.org/)
+        Server-side javascript runtime.
     * [Phaser](http://phaser.io)
-        HTML5 Game Library
-    * [Telegram Bot SDK](https://github.com/irazasyed/telegram-bot-sdk)
-        PHP Wrapper for Telegram API.
+        HTML5 Game Library.
+    * [Telegraf](http://telegraf.js.org)
+        Node.js Wrapper for Telegram API.
     * [jQuery](https://jquery.com)
         General purpose javascript library.
     
