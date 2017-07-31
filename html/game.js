@@ -209,7 +209,7 @@ function setGameOver() {
 
 // Simple borrowed function to retrieve GET parameters
 function parse(val) {
-    var result = "Not found",
+    var result = undefined;
         tmp = [];
     location.search
     .substr(1)
