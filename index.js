@@ -11,6 +11,7 @@ app.set('port', tokens.PORT || tokens.DEFAULT_PORT);
 app.use(express.static(path.join(__dirname + '/html')));
 app.use("/bot"+tokens.BOT_TOKEN, bodyParser.json());
 
+bot.setWebHook();
 bot.setWebHook(tokens.WEBHOOK+"/bot"+tokens.BOT_TOKEN);
  
 bot.on('callbackQuery', (query) => {
@@ -87,6 +88,7 @@ app.get('/setscore/uid/:user_id/iid/:inline_id', (req, res) => {
 });
 
 app.post("/bot"+tokens.BOT_TOKEN, (req, res) => {
+    console.log(req.body);
     bot.processUpdate(req.body);
     res.sendStatus(200);
 });
