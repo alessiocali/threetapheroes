@@ -1,4 +1,4 @@
-var tokens = require('../_token.js');
+var tokens = require('./_token.js');
 var TelegramBot = require('node-telegram-bot-api');
 var express = require('express');
 var path = require('path');
@@ -7,18 +7,19 @@ var bot = new TelegramBot(tokens.BOT_TOKEN, {polling:true});
 var app = express();
 
 app.set('port', tokens.PORT || tokens.DEFAULT_PORT);
+app.use(express.static(path.join(__dirname + '/html')))
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/index.html'));
+    res.sendFile('/index.html');
 });
 app.get('/game.js', (req, res) => {
-    res.sendFile(path.join(__dirname + '/game.js'));
+    res.sendFile('/game.js');
 });
 app.get('/libs/*', (req, res) => {
-    res.sendFile(path.join(__dirname + req.path));
+    res.sendFile(req.path);
 });
 app.get('/assets/*', (req, res) => {
-    res.sendFile(path.join(__dirname + req.path));
+    res.sendFile(req.path);
 });
 
 app.get('/setscore/uid/:user_id/iid/:inline_id', (req, res) => {
