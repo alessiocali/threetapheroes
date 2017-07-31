@@ -201,12 +201,7 @@ function setGameOver() {
     var uid = parse("uid");
     var iid = parse("iid");
     if (uid && iid) {
-        bot.setGameScore({
-            'user_id' : uid,
-            'score' : score,
-            'inline_message_id' : iid,
-            'edit_message' : true
-        });
+        $.get("/setscore/uid/"+uid+"/iid/"+iid+"/score/"+score);
     }
 }
 

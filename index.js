@@ -123,10 +123,10 @@ app.get('/assets/*', (req, res) => {
     res.sendFile(req.path);
 });
 
-app.get('/setscore/uid/:user_id/iid/:inline_id', (req, res) => {
-    bot.setGameScore(req.params.user_id, score,
+app.get('/setscore/uid/:user_id/iid/:inline_id/score/:score', (req, res) => {
+    bot.setGameScore(req.params.user_id, req.params.score,
         {
-            'inline_message_id' : req.inline_id,
+            'inline_message_id' : req.params.inline_id,
             'edit_message' : true
         }
     );
