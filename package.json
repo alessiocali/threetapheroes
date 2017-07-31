@@ -1,6 +1,6 @@
 {
   "name": "3tapheroes",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "This project is very early in development. You might spot various errors in the code and find the program itself doing far less then it is supposed to. Plus I'm not exactly a pro in web development so take that into account.",
   "main": "_token.js",
   "dependencies": {
