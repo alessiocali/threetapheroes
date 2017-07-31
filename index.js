@@ -110,7 +110,7 @@ bot.on('message', (msg) => {
     }
 });
 
-app.get('/', (req, res) => {
+app.get(/\/(index\.html)?/, (req, res) => {
     res.sendFile('/index.html');
 });
 app.get('/game.js', (req, res) => {
