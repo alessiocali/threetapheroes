@@ -9,7 +9,7 @@ Three Tap Heroes is an extremely simple Gamebot for Telegram. You play as a team
 ## Dependencies 
 
 The game itself is written in Javascript using Phaser. Please refer to http://phaser.io/ for further details. 
-The Telegram Bot API is wrapped using Telegram Bot SDK. Please refer to https://github.com/irazasyed/telegram-bot-sdk/
+The bot itself runs on Node.js using Telegraf (http://telegraf.js.org) and Express (http://expressjs.com/)
 
 ## Setting Up 
 
